@@ -11,30 +11,52 @@ import UIKit
 
 class PhotoCollectionViewCell: UICollectionViewCell {
     
+    
+    //MARK: IBOutlets
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var photo: Photo? = nil {
+    
+    //MARK: Variables
+    var photo: Photo? {
         didSet {
-            loading = true
-            photo?.start
-            
+            setImage()
         }
     }
-   
-    var loading: Bool {
-        set {
-            if newValue {
-                imageView.image = nil
-                activityIndicator.startAnimating()
-                activityIndicator.isHidden = false
-            } else {
-                activityIndicator.stopAnimating()
-                activityIndicator.isHidden = true
+    
+    func setImage() {
+        DispatchQueue.main.async {
+            self.activityIndicator.startAnimating()
+            self.activityIndicator.isHidden = false
+        }
+        if photo!.imageData != nil {
+                DispatchQueue.main.async {
+                self.imageView.image = UIImage(data: self.photo!.imageData! as Data)
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.isHidden = true
             }
+        } else {
+            downloadImage(photo!)
         }
-        get {
-            return !activityIndicator.isHidden
-        }
+    }
+    
+    func downloadImage(_ photo: Photo) {
+        
+        NetworkConvenience.sharedInstance().session.dataTask(with: URL(string: photo.url!)!) { (data, response, error) in
+            if error == nil {
+                 DispatchQueue.main.async {
+                    self.imageView.image = UIImage(data: data!)
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
+                }
+            }
+            
+        }.resume()
+    }
+    
+    func saveImage() {
+        let image = self.imageView.image
+        photo!.imageData = UIImagePNGRepresentation(image!)! as NSData
+        DatabaseController.saveContext()
     }
 }

@@ -34,6 +34,9 @@ extension Flickr {
         static let Text = "text"
         static let BoundingBox = "bbox"
         static let Page = "page"
+        static let Longitude = "lon"
+        static let Latitutde = "lat"
+        static let PerPage = "per_page"
     }
     
     // MARK: Flickr Parameter Values

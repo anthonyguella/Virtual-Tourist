@@ -13,12 +13,8 @@ class NetworkConvenience {
     var session = URLSession.shared
     
     // MARK: Get
-    func taskForGetMethod(url: URL, trimData: Bool, completionHandlerForGet: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
+    func taskForGetMethod(url: URL, completionHandlerForGet: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
         let request = NSMutableURLRequest(url: url)
-        if url.absoluteString.contains("parse") {
-            request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
-            request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
-        }
         let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
             
             func sendError(_ error: String) {
@@ -41,28 +37,16 @@ class NetworkConvenience {
                 sendError("No data was returned by the request!")
                 return
             }
-            var newData = data
             
-            if trimData {
-                let range = Range(5..<data.count)
-                newData = data.subdata(in: range)
-            }
-            self.convertDataWithCompletionHandler(newData, completionHandlerForConvertData: completionHandlerForGet)
+            self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForGet)
         }
         task.resume()
         return task
     }
     
     // MARK: POST
-    func taskForPostMethod(url: URL, trimData: Bool, jsonBody: String, completionHandlerForPost: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
+    func taskForPostMethod(url: URL, jsonBody: String, completionHandlerForPost: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
         let request = NSMutableURLRequest(url: url)
-        if url.absoluteString.contains("parse") {
-            request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
-            request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
-        } else {
-            request.addValue("application/json", forHTTPHeaderField: "Accept")
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        }
         request.httpMethod = "POST"
         request.httpBody = jsonBody.data(using: String.Encoding.utf8)
         let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
@@ -87,20 +71,15 @@ class NetworkConvenience {
                 sendError("No data was returned by the request!", 2)
                 return
             }
-            var newData = data
             
-            if trimData {
-                let range = Range(5..<data.count)
-                newData = data.subdata(in: range)
-            }
-            self.convertDataWithCompletionHandler(newData, completionHandlerForConvertData: completionHandlerForPost)
+            self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForPost)
         }
         task.resume()
         return task
     }
     
     // MARK: PUT
-    func taskForPutMethod(url: URL, trimData: Bool, jsonBody: String, completionHandlerForPut: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
+    func taskForPutMethod(url: URL, jsonBody: String, completionHandlerForPut: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
         let request = NSMutableURLRequest(url: url)
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
@@ -129,20 +108,15 @@ class NetworkConvenience {
                 sendError("No data was returned by the request!")
                 return
             }
-            var newData = data
-            
-            if trimData {
-                let range = Range(5..<data.count)
-                newData = data.subdata(in: range)
-            }
-            self.convertDataWithCompletionHandler(newData, completionHandlerForConvertData: completionHandlerForPut)
+
+            self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForPut)
         }
         task.resume()
         return task
     }
     
     // MARK: DELETE
-    func taskForDeleteMethod(url: URL, trimData: Bool, completionHandlerForPost: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
+    func taskForDeleteMethod(url: URL, completionHandlerForPost: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = "DELETE"
         var xsrfCookie: HTTPCookie? = nil
@@ -176,13 +150,8 @@ class NetworkConvenience {
                 sendError("No data was returned by the request!")
                 return
             }
-            var newData = data
-            
-            if trimData {
-                let range = Range(5..<data.count)
-                newData = data.subdata(in: range)
-            }
-            self.convertDataWithCompletionHandler(newData, completionHandlerForConvertData: completionHandlerForPost)
+
+            self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForPost)
         }
         task.resume()
         return task

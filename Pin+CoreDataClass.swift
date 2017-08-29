@@ -10,10 +10,9 @@ import Foundation
 import CoreData
 import MapKit
 
-@objc(Pin)
 public class Pin: NSManagedObject, MKAnnotation {
     
-    var coordinate: CLLocationCoordinate2D {
+    public var coordinate: CLLocationCoordinate2D {
         set {
             latitude = newValue.latitude
             longitude = newValue.longitude
@@ -33,9 +32,34 @@ public class Pin: NSManagedObject, MKAnnotation {
         
         self.latitude = latitude
         self.longitude = longitude
-        
-        
     }
     
-
+    func getNewPhotos(context: NSManagedObjectContext) {
+        
+        let photos = Flickr.sharedInstance().getFlickrImagesFromSearch(lat: self.latitude, lon: self.longitude, nil) { (photos, error) in
+            
+            guard error == nil else {
+                print(error)
+                return
+            }
+            
+            guard photos != nil else {
+                print("No images found")
+                return
+            }
+            
+            for photo in photos! {
+                let url = photo["url_m"] as! String
+                let photo = Photo(pin: self, url: url, context: context)
+                do{
+                    try DatabaseController.saveContext()
+                }
+                catch {
+                }
+                
+                    
+            }
+            return
+        }
+    }
 }
