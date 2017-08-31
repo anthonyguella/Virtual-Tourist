@@ -212,7 +212,6 @@ class ImagesViewController: UIViewController, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(fetchedResultsController.sections![section].numberOfObjects)
         return fetchedResultsController.sections![section].numberOfObjects
     }
     

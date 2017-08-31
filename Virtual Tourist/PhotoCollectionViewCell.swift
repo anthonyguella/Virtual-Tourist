@@ -48,6 +48,7 @@ class PhotoCollectionViewCell: UICollectionViewCell {
                     self.imageView.image = UIImage(data: data!)
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
+                    self.saveImage()
                 }
             }
             
