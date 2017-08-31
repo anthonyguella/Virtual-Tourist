@@ -15,7 +15,11 @@ class Flickr: NSObject {
         var p = page
         
         if totalPhotos != nil {
-            p = Int(arc4random_uniform(UInt32(totalPhotos!/21))+1)
+            if totalPhotos! > 4000 {
+                p = Int(arc4random_uniform(4000/21)+1)
+            } else {
+                p = Int(arc4random_uniform(UInt32(totalPhotos!/21))+1)
+            }
         }
         print(p)
         
