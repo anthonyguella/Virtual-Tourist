@@ -51,13 +51,13 @@ public class Pin: NSManagedObject, MKAnnotation {
             for photo in photos! {
                 let url = photo["url_m"] as! String
                 let photo = Photo(pin: self, url: url, context: context)
-                do{
-                    try DatabaseController.saveContext()
-                }
-                catch {
-                }
-                
-                    
+                DispatchQueue.main.async {
+                    do{
+                        try DatabaseController.saveContext()
+                    }
+                    catch {
+                    }
+                }      
             }
             return
         }

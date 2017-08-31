@@ -11,12 +11,13 @@ import Foundation
 class Flickr: NSObject {
     
     
-    func getFlickrImagesFromSearch(lat: Double, lon: Double, page: Int = 1, _ totalPages: Int?, handler: @escaping(_ photos: [[String:AnyObject]]?, _ error: String?)->Void) {
+    func getFlickrImagesFromSearch(lat: Double, lon: Double, page: Int = 1, _ totalPhotos: Int?, handler: @escaping(_ photos: [[String:AnyObject]]?, _ error: String?)->Void) {
         var p = page
         
-        if totalPages != nil {
-            p = Int(arc4random_uniform(UInt32(totalPages!))+1)
+        if totalPhotos != nil {
+            p = Int(arc4random_uniform(UInt32(totalPhotos!/21))+1)
         }
+        print(p)
         
         
         let parameters = [
@@ -45,9 +46,9 @@ class Flickr: NSObject {
                 handler(nil, "Wrong response")
                 return
             }
-            
-            guard let pages = photoData["pages"] as? Int else {
-                print("Can't find [photos][pages] in response")
+
+            guard let totalNumPhotos = photoData["total"] as? String else {
+                print("Can't find [photos][total] in response")
                 handler(nil, "Wrong response")
                 return
             }
@@ -58,10 +59,10 @@ class Flickr: NSObject {
                 return
             }
             
-            if totalPages != nil {
+            if totalPhotos != nil {
                 handler(results, nil)
             } else {
-                self.getFlickrImagesFromSearch(lat: lat, lon: lon, pages, handler: handler)
+                self.getFlickrImagesFromSearch(lat: lat, lon: lon, Int(totalNumPhotos), handler: handler)
             }
         }
         
