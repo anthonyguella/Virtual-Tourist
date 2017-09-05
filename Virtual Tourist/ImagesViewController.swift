@@ -125,19 +125,24 @@ class ImagesViewController: UIViewController, UICollectionViewDelegate, UICollec
      * Gets new photos
      */
     func showNewResult() {
+        
         newCollectionButton.isEnabled = false
         deleteExistingCoreDataPhotos()
         savedImages.removeAll()
         collectionView.reloadData()
         
-        self.pin!.getNewPhotos(context: DatabaseController.getContext())
-        
-        DispatchQueue.main.async {
-            self.savedImages = self.preloadPhotos()!
-            self.showSavedResult()
-            self.newCollectionButton.isEnabled = true
+        Flickr.sharedInstance().getFlickrImagesFromSearch(lat: pin!.latitude, lon: pin!.longitude, nil) { (photos, error) in
+            if error == nil {
+                DispatchQueue.main.async {
+                    print(photos)
+                    self.addToCoreData(photos: photos!)
+                    self.savedImages = self.preloadPhotos()!
+                    self.showSavedResult()
+                    self.newCollectionButton.isEnabled = true
+                }
+            }
         }
-      }
+    }
     
     /*
      * Deletes exising images from core data
@@ -145,6 +150,20 @@ class ImagesViewController: UIViewController, UICollectionViewDelegate, UICollec
     func deleteExistingCoreDataPhotos() {
         for image in savedImages {
             DatabaseController.getContext().delete(image)
+        }
+        DatabaseController.saveContext()
+    }
+    
+    /*
+     * Adds images to Core Data
+     */
+    func addToCoreData(photos: [[String:AnyObject]]) {
+        
+        for photo in photos {
+            let url = photo["url_m"] as! String
+            let photo = Photo(pin: pin!, url: url, context: DatabaseController.getContext())
+            DatabaseController.saveContext()
+        
         }
     }
     
@@ -217,6 +236,7 @@ class ImagesViewController: UIViewController, UICollectionViewDelegate, UICollec
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath) as! PhotoCollectionViewCell
+        cell.activityIndicator.startAnimating()
         let photo = fetchedResultsController.object(at: indexPath)
         cell.photo = photo
         cell.contentView.alpha = 1.0

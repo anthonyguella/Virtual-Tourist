@@ -72,7 +72,6 @@ class Flickr: NSObject {
         
     }
     
-    
     private func flickrURLFromParameters(_ parameters: [String:AnyObject]) -> URL {
         
         var components = URLComponents()

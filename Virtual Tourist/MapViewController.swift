@@ -89,6 +89,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             mapView.deselectAnnotation(view.annotation, animated: false)
         } else {
             DatabaseController.getContext().delete(pin)
+            DatabaseController.saveContext()
             mapView.removeAnnotation(view.annotation!)
         }
     }

@@ -34,7 +34,7 @@ public class Pin: NSManagedObject, MKAnnotation {
         self.longitude = longitude
     }
     
-    func getNewPhotos(context: NSManagedObjectContext) {
+    func getNewPhotos(context: NSManagedObjectContext, handler: @escaping(_ result: [Photo]?)->Void) {
         
         let photos = Flickr.sharedInstance().getFlickrImagesFromSearch(lat: self.latitude, lon: self.longitude, nil) { (photos, error) in
             
@@ -45,19 +45,14 @@ public class Pin: NSManagedObject, MKAnnotation {
             
             guard photos != nil else {
                 print("No images found")
+                handler(nil)
                 return
             }
             
             for photo in photos! {
                 let url = photo["url_m"] as! String
                 let photo = Photo(pin: self, url: url, context: context)
-                DispatchQueue.main.async {
-                    do{
-                        try DatabaseController.saveContext()
-                    }
-                    catch {
-                    }
-                }      
+                
             }
             return
         }

@@ -25,10 +25,7 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     }
     
     func setImage() {
-        DispatchQueue.main.async {
-            self.activityIndicator.startAnimating()
-            self.activityIndicator.isHidden = false
-        }
+        
         if photo!.imageData != nil {
                 DispatchQueue.main.async {
                 self.imageView.image = UIImage(data: self.photo!.imageData! as Data)
